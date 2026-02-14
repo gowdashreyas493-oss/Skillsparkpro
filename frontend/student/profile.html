@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - SkillSpark Pro</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>SkillSpark Pro</h2>
+                <p>Student Portal</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">Dashboard</a>
+                <a href="profile.html" class="nav-item active">My Profile</a>
+                <a href="courses.html" class="nav-item">Courses</a>
+                <a href="jobs.html" class="nav-item">Job Portal</a>
+                <a href="applications.html" class="nav-item">My Applications</a>
+                <a href="exams.html" class="nav-item">Exams</a>
+                <a href="results.html" class="nav-item">Results</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="user-info">
+                    <div class="user-details">
+                        <div class="name" id="user-name">Loading...</div>
+                        <div class="meta" id="user-meta">Loading...</div>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h1>My Profile</h1>
+                    <p>View and update your information</p>
+                </div>
+
+                <div id="error-container"></div>
+                <div id="success-container"></div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="grid grid-2">
+                            <div class="form-group">
+                                <label>USN (Cannot be changed)</label>
+                                <input type="text" id="profile-usn" readonly style="background: #f3f4f6;">
+                            </div>
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="profile-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email (Cannot be changed)</label>
+                                <input type="email" id="profile-email" readonly style="background: #f3f4f6;">
+                            </div>
+                            <div class="form-group">
+                                <label>Branch (Cannot be changed)</label>
+                                <input type="text" id="profile-branch" readonly style="background: #f3f4f6;">
+                            </div>
+                            <div class="form-group">
+                                <label>Year (Cannot be changed)</label>
+                                <input type="text" id="profile-year" readonly style="background: #f3f4f6;">
+                            </div>
+                            <div class="form-group">
+                                <label>CGPA</label>
+                                <input type="number" id="profile-cgpa" min="0" max="10" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Backlogs</label>
+                                <input type="number" id="profile-backlogs" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" id="profile-phone" maxlength="10" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Skills (Comma-separated)</label>
+                            <input type="text" id="profile-skills" placeholder="Python, Java, React, SQL">
+                            <small style="color: #6b7280; font-size: 12px;">Example: Python, Java, React, SQL</small>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="updateProfile()">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/common.js"></script>
+    <script src="../js/student.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await checkSession();
+            if (!user || user.role !== 'student') {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            document.getElementById('user-name').textContent = user.name;
+            document.getElementById('user-meta').textContent = user.usn;
+
+            await loadProfilePage();
+        });
+    </script>
+</body>
+</html>
