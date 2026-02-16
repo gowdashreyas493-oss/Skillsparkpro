@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students - SkillSpark Pro</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>SkillSpark Pro</h2>
+                <p>Admin Portal</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">Dashboard</a>
+                <a href="students.html" class="nav-item active">Manage Students</a>
+                <a href="create-job.html" class="nav-item">Create Job</a>
+                <a href="applications.html" class="nav-item">Applications</a>
+                <a href="create-exam.html" class="nav-item">Create Exam</a>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="user-info"><div class="user-details"><div class="name">Admin</div></div></div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h1>Manage Students</h1>
+                    <p>View all registered students</p>
+                </div>
+                <div class="card">
+                    <div class="card-body" id="students-table"><div class="spinner"></div></div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../js/common.js"></script>
+    <script src="../js/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await checkSession();
+            if (!user || user.role !== 'admin') {
+                window.location.href = '../index.html';
+                return;
+            }
+            await loadStudentsPage();
+        });
+    </script>
+</body>
+</html>

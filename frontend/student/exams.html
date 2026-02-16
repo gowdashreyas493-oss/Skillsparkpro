@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exams - SkillSpark Pro</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>SkillSpark Pro</h2>
+                <p>Student Portal</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">Dashboard</a>
+                <a href="profile.html" class="nav-item">My Profile</a>
+                <a href="courses.html" class="nav-item">Courses</a>
+                <a href="jobs.html" class="nav-item">Job Portal</a>
+                <a href="applications.html" class="nav-item">My Applications</a>
+                <a href="exams.html" class="nav-item active">Exams</a>
+                <a href="results.html" class="nav-item">Results</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="user-info">
+                    <div class="user-details">
+                        <div class="name" id="user-name">Loading...</div>
+                        <div class="meta" id="user-meta">Loading...</div>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h1>Exams</h1>
+                    <p>View and attempt available exams</p>
+                </div>
+
+                <div id="error-container"></div>
+                <div id="success-container"></div>
+
+                <!-- Tabs -->
+                <div class="tabs" style="margin-bottom: 30px;">
+                    <button class="tab active" onclick="showExamsTab('upcoming')">Upcoming</button>
+                    <button class="tab" onclick="showExamsTab('completed')">Completed</button>
+                </div>
+
+                <!-- Upcoming Exams -->
+                <div id="upcoming-exams" class="tab-content active">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="upcoming-container">
+                                <div class="spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completed Exams -->
+                <div id="completed-exams" class="tab-content">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="completed-container">
+                                <div class="spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/common.js"></script>
+    <script src="../js/exam.js"></script>
+    <script>
+        let examsData = [];
+
+        function showExamsTab(tab) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+
+            if (tab === 'upcoming') {
+                tabs[0].classList.add('active');
+                document.getElementById('upcoming-exams').classList.add('active');
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('completed-exams').classList.add('active');
+            }
+        }
+
+        async function loadExamsPage() {
+            try {
+                const data = await apiCall('/exams');
+                examsData = data.exams;
+
+                const upcoming = examsData.filter(e => e.attempt_status === 'not_started' || e.attempt_status === 'in_progress');
+                const completed = examsData.filter(e => e.attempt_status === 'submitted' || e.attempt_status === 'evaluated');
+
+                displayUpcomingExamsList(upcoming);
+                displayCompletedExamsList(completed);
+            } catch (error) {
+                showError('Failed to load exams: ' + error.message);
+            }
+        }
+
+        function displayUpcomingExamsList(exams) {
+            const container = document.getElementById('upcoming-container');
+
+            if (exams.length === 0) {
+                container.innerHTML = '<p class="text-center" style="color: #6b7280; padding: 40px;">No upcoming exams</p>';
+                return;
+            }
+
+            container.innerHTML = exams.map(exam => `
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-body">
+                        <h3>${exam.title}</h3>
+                        <div style="display: flex; gap: 20px; margin: 16px 0; color: #6b7280; font-size: 14px;">
+                            <span>📝 Type: <strong>${exam.exam_type.toUpperCase()}</strong></span>
+                            <span>⏱️ Duration: <strong>${exam.duration_minutes} minutes</strong></span>
+                            <span>📊 Total Marks: <strong>${exam.total_marks}</strong></span>
+                            <span>✅ Passing: <strong>${exam.passing_marks}</strong></span>
+                        </div>
+
+                        <div style="background: #f9fafb; padding: 12px; border-radius: 6px; margin: 16px 0;">
+                            <strong>Instructions:</strong>
+                            <p style="margin-top: 8px; font-size: 14px;">${exam.instructions || 'No specific instructions'}</p>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <button class="btn btn-primary" onclick="startExam(${exam.id})">
+                                ${exam.attempt_status === 'in_progress' ? 'Resume Exam' : 'Start Exam'}
+                            </button>
+                            ${exam.proctoring_enabled ?
+                                '<span style="font-size: 13px; color: #ef4444;">⚠️ Proctoring Enabled</span>' :
+                                ''
+                            }
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayCompletedExamsList(exams) {
+            const container = document.getElementById('completed-container');
+
+            if (exams.length === 0) {
+                container.innerHTML = '<p class="text-center" style="color: #6b7280; padding: 40px;">No completed exams</p>';
+                return;
+            }
+
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Exam</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${exams.map(exam => `
+                            <tr>
+                                <td><strong>${exam.title}</strong></td>
+                                <td>${formatDateTime(exam.scheduled_date)}</td>
+                                <td>
+                                    <span class="status-badge ${exam.attempt_status === 'evaluated' ? 'pass' : 'pending'}">
+                                        ${exam.attempt_status === 'evaluated' ? 'Evaluated' : 'Pending Evaluation'}
+                                    </span>
+                                </td>
+                                <td>
+                                    ${exam.attempt_status === 'evaluated' ?
+                                        `<a href="results.html?exam_id=${exam.id}" class="btn btn-sm btn-primary">View Results</a>` :
+                                        '<span style="font-size: 13px; color: #6b7280;">Awaiting evaluation</span>'
+                                    }
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        async function startExam(examId) {
+            if (!confirm('Are you ready to start the exam?\n\n⚠️ Important:\n- Camera access required for proctoring\n- Timer will start immediately\n- Cannot pause once started')) {
+                return;
+            }
+
+            try {
+                const data = await apiCall(`/exams/${examId}/start`, { method: 'POST' });
+                window.location.href = `exam-interface.html?exam_id=${examId}&student_exam_id=${data.student_exam_id}`;
+            } catch (error) {
+                showError('Failed to start exam: ' + error.message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await checkSession();
+            if (!user || user.role !== 'student') {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            document.getElementById('user-name').textContent = user.name;
+            document.getElementById('user-meta').textContent = user.usn;
+
+            await loadExamsPage();
+        });
+    </script>
+</body>
+</html>

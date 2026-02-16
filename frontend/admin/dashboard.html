@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SkillSpark Pro</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>SkillSpark Pro</h2>
+                <p>Admin Portal</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item active">Dashboard</a>
+                <a href="students.html" class="nav-item">Manage Students</a>
+                <a href="create-job.html" class="nav-item">Create Job</a>
+                <a href="applications.html" class="nav-item">Applications</a>
+                <a href="create-exam.html" class="nav-item">Create Exam</a>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="user-info">
+                    <div class="user-details">
+                        <div class="name" id="user-name">Admin</div>
+                        <div class="meta">Administrator</div>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h1>Admin Dashboard</h1>
+                    <p>System Overview</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="label">Total Students</div>
+                        <div class="value" id="stat-students">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Active Jobs</div>
+                        <div class="value" id="stat-jobs">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Total Exams</div>
+                        <div class="value" id="stat-exams">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Applications</div>
+                        <div class="value" id="stat-applications">-</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h2>Recent Activity</h2></div>
+                    <div class="card-body" id="recent-activity"><div class="spinner"></div></div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../js/common.js"></script>
+    <script src="../js/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await checkSession();
+            if (!user || user.role !== 'admin') {
+                window.location.href = '../index.html';
+                return;
+            }
+            document.getElementById('user-name').textContent = user.name;
+            await loadAdminDashboard();
+        });
+    </script>
+</body>
+</html>

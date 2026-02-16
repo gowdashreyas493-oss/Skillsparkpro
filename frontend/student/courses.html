@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses - SkillSpark Pro</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>SkillSpark Pro</h2>
+                <p>Student Portal</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">Dashboard</a>
+                <a href="profile.html" class="nav-item">My Profile</a>
+                <a href="courses.html" class="nav-item active">Courses</a>
+                <a href="jobs.html" class="nav-item">Job Portal</a>
+                <a href="applications.html" class="nav-item">My Applications</a>
+                <a href="exams.html" class="nav-item">Exams</a>
+                <a href="results.html" class="nav-item">Results</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="user-info">
+                    <div class="user-details">
+                        <div class="name" id="user-name">Loading...</div>
+                        <div class="meta" id="user-meta">Loading...</div>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h1>Available Courses</h1>
+                    <p>Enroll in courses to enhance your skills</p>
+                </div>
+
+                <div id="error-container"></div>
+                <div id="success-container"></div>
+
+                <div id="courses-grid" class="grid grid-3">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/common.js"></script>
+    <script src="../js/student.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await checkSession();
+            if (!user || user.role !== 'student') {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            document.getElementById('user-name').textContent = user.name;
+            document.getElementById('user-meta').textContent = user.usn;
+
+            await loadCoursesPage();
+        });
+    </script>
+</body>
+</html>

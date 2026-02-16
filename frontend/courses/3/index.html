@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course 3 - SkillSpark Pro</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <main class="main-content" style="margin-left: 0;">
+            <div class="top-bar">
+                <div class="user-info">
+                    <h2>Course Content</h2>
+                </div>
+                <button class="btn btn-secondary" onclick="window.location.href='../../student/courses.html'">Back to Courses</button>
+            </div>
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h1>Course Module</h1>
+                    <p>Learning content will be available here</p>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <p>Course content is being developed. Check back soon!</p>
+                        <button class="btn btn-primary mt-20" onclick="markProgress()">Mark as Complete</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../../js/common.js"></script>
+    <script>
+        async function markProgress() {
+            try {
+                await apiCall('/student/courses/3/progress', {
+                    method: 'PUT',
+                    body: JSON.stringify({ progress_percentage: 100 })
+                });
+                alert('Progress updated!');
+                window.location.href = '../../student/courses.html';
+            } catch (error) {
+                alert('Failed to update progress: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

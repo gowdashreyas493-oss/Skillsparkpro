@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - SkillSpark Pro</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>SkillSpark Pro</h2>
+                <p>Student Portal</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item active">Dashboard</a>
+                <a href="profile.html" class="nav-item">My Profile</a>
+                <a href="courses.html" class="nav-item">Courses</a>
+                <a href="jobs.html" class="nav-item">Job Portal</a>
+                <a href="applications.html" class="nav-item">My Applications</a>
+                <a href="exams.html" class="nav-item">Exams</a>
+                <a href="results.html" class="nav-item">Results</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="user-info">
+                    <div class="user-details">
+                        <div class="name" id="user-name">Loading...</div>
+                        <div class="meta" id="user-meta">Loading...</div>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+
+            <!-- Content -->
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h1>Dashboard</h1>
+                    <p>Welcome back! Here's your overview</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid" id="stats-container">
+                    <div class="stat-card">
+                        <div class="label">Courses Enrolled</div>
+                        <div class="value" id="stat-courses">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Jobs Applied</div>
+                        <div class="value" id="stat-jobs">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Exams Completed</div>
+                        <div class="value" id="stat-exams">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Average Score</div>
+                        <div class="value" id="stat-average">-</div>
+                    </div>
+                </div>
+
+                <!-- My Courses -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>My Courses</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="courses-container" class="grid grid-3">
+                            <div class="spinner"></div>
+                        </div>
+                        <div id="no-courses" class="hidden text-center" style="padding: 40px;">
+                            <p style="color: #6b7280; margin-bottom: 16px;">No courses enrolled yet</p>
+                            <a href="courses.html" class="btn btn-primary btn-sm">Browse Courses</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Exams -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Upcoming Exams</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="exams-container">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Latest Jobs -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Latest Job Opportunities</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="jobs-container">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/common.js"></script>
+    <script src="../js/student.js"></script>
+    <script>
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await checkSession();
+            if (!user || user.role !== 'student') {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Display user info
+            document.getElementById('user-name').textContent = user.name;
+            document.getElementById('user-meta').textContent = `${user.usn}`;
+
+            // Load dashboard data
+            await loadDashboardData();
+        });
+    </script>
+</body>
+</html>
